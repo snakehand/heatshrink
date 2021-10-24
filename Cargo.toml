@@ -2,6 +2,10 @@
 name = "heatshrink"
 version = "0.1.0"
 edition = "2021"
+authors = ["Frank A. Stevenson <root@localhost>"]
+description = "A minimal implementation of the heatshrink compression algorithm for no_std environments"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
