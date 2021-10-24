@@ -11,8 +11,8 @@
 mod decoder;
 mod encoder;
 
-pub use decoder::decode;
-pub use encoder::encode;
+pub use decoder::{decode, DecodeError};
+pub use encoder::{encode, EncodeError};
 
 /// Structure holding the configuration parameters
 /// These can be tuned to improve compression ratio

@@ -1,7 +1,7 @@
 use super::Config;
 
 #[derive(Debug, Copy, Clone)]
-pub enum HSDstate {
+enum HSDstate {
     HSDSTagBit,          /* tag bit */
     HSDSYieldLiteral,    /* ready to yield literal byte */
     HSDSBackrefIndexMsb, /* most significant byte of index */
@@ -13,8 +13,10 @@ pub enum HSDstate {
     OutputFull,          /* Abort due to full output */
 }
 
+/// Errors that can be encountered while decompressing data
 #[derive(Debug)]
 pub enum DecodeError {
+    /// The output buffer was to small to hold the decompressed data
     OutputFull,
 }
 

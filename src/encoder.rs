@@ -10,8 +10,10 @@ pub struct HeatshrinkEncoder<'a, 'b> {
     output: &'b mut [u8],
 }
 
+/// Errors that may be encountered when compressing data
 #[derive(Debug)]
 pub enum EncodeError {
+    /// The output buffer was not large enough to hold the compressed data
     OutputFull,
 }
 
