@@ -11,6 +11,7 @@ enum HSDstate {
     HSDSYieldBackref,    /* ready to yield back-reference */
     HSDSNeedMoreData,    /* End of input buffer detected */
     OutputFull,          /* Abort due to full output */
+    IllegalBackref,      /* Abort due to illegal backref */
 }
 
 /// Errors that can be encountered while decompressing data
@@ -18,6 +19,8 @@ enum HSDstate {
 pub enum DecodeError {
     /// The output buffer was to small to hold the decompressed data
     OutputFull,
+    /// The Backrefs points outside the start of fata
+    IllegalBackref,
 }
 
 pub struct HeatshrinkDecoder<'a, 'b> {
@@ -76,6 +79,9 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
                 }
                 HSDstate::OutputFull => {
                     return Err(DecodeError::OutputFull);
+                }
+                HSDstate::IllegalBackref => {
+                    return Err(DecodeError::IllegalBackref);
                 }
             };
             // println!("State: {:?} {:?}", self.state, self.bit_index);
@@ -192,6 +198,9 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
             self.output_index, self.output_count
         ); */
         let count = self.output_count as usize;
+        if self.output_index as usize > self.head_index {
+            return HSDstate::IllegalBackref;
+        }
         let start_in = self.head_index - self.output_index as usize;
         if self.head_index + count > self.output.len() {
             return HSDstate::OutputFull;
