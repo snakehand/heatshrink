@@ -16,7 +16,7 @@ pub use encoder::{encode, EncodeError};
 
 /// Structure holding the configuration parameters
 /// These can be tuned to improve compression ratio
-/// But bbust be the same for encode() & decode()
+/// But they must be the same for encode() & decode()
 /// calls to be able to produce the original data
 #[derive(Debug, Copy, Clone)]
 pub struct Config {
@@ -36,7 +36,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Creates a enw configuration object with default values
+    /// Creates a new configuration object with default values
     pub fn new(window_sz2: u8, lookahead_sz2: u8) -> Result<Self, &'static str> {
         Config::default()
             .with_window(window_sz2)

@@ -17,9 +17,9 @@ enum HSDstate {
 /// Errors that can be encountered while decompressing data
 #[derive(Debug)]
 pub enum DecodeError {
-    /// The output buffer was to small to hold the decompressed data
+    /// The output buffer was not large enough to hold the decompressed data
     OutputFull,
-    /// The Backrefs points outside the start of fata
+    /// The Backrefs points outside the start of data
     IllegalBackref,
 }
 
@@ -34,8 +34,9 @@ pub struct HeatshrinkDecoder<'a, 'b> {
     output: &'b mut [u8],
 }
 
-/// Basice decompression call. Source and destination must reside in memory,
-/// and destination must be big enough to hold the decompressed data, or an error will be returned
+/// Basic decompression call. Source and destination must reside in memory,
+/// and destination must be large enough to hold the decompressed data,
+/// or an error will be returned
 pub fn decode<'a>(
     input: &[u8],
     output: &'a mut [u8],
