@@ -17,8 +17,9 @@ pub enum EncodeError {
     OutputFull,
 }
 
-/// Basice compression call. Source and destination must reside in memory,
-/// and destination must be big enough to hold the compressed data, or an error will be returned
+/// Basic compression call. Source and destination must reside in memory,
+/// and destination must be large enough to hold the compressed data,
+/// or an error will be returned
 pub fn encode<'a>(
     input: &[u8],
     output: &'a mut [u8],
