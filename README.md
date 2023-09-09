@@ -1,4 +1,4 @@
-# heatsrhink
+# Heatshrink
 Minimal no_std implementation of Heatshrink compression &amp; decompression
 
 ## License
