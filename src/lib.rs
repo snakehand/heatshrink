@@ -1,4 +1,4 @@
-// #![no_std]
+#![no_std]
 #![deny(warnings)]
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
