@@ -25,3 +25,9 @@ name = "encode_decode"
 path = "fuzz_targets/encode_decode.rs"
 test = false
 doc = false
+
+[[bin]]
+name = "decode_random"
+path = "fuzz_targets/decode_random.rs"
+test = false
+doc = false

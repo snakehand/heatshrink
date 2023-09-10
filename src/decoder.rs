@@ -67,6 +67,9 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
 
     fn decode(mut self) -> Result<&'b [u8], DecodeError> {
         loop {
+            if self.output.len() <= self.head_index {
+                return Err(DecodeError::OutputFull);
+            }
             self.state = match self.state {
                 HSDstate::HSDSTagBit => self.st_tag_bit(),
                 HSDstate::HSDSYieldLiteral => self.st_yield_literal(),
@@ -88,9 +91,6 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
             // println!("State: {:?} {:?}", self.state, self.bit_index);
             if self.input.len() * 8 < self.bit_index {
                 break;
-            }
-            if self.output.len() < self.head_index {
-                return Err(DecodeError::OutputFull);
             }
         }
         Ok(&self.output[..self.head_index])
@@ -184,7 +184,7 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
     fn st_backref_count_lsb(&mut self) -> HSDstate {
         let bit_ct = self.cfg.lookahead_sz2.min(8);
         self.output_count = match self.get_bits(bit_ct) {
-            Some(idx) => self.output_count | idx as u16,
+            Some(idx) => self.output_count | idx,
             None => {
                 return HSDstate::HSDSNeedMoreData;
             }
@@ -194,10 +194,12 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
     }
 
     fn st_yield_backref(&mut self) -> HSDstate {
-        /* println!(
-            "Backref: idx:{}  count:{}",
-            self.output_index, self.output_count
-        ); */
+        /*
+        println!(
+            "Backref: idx:{}  count:{} head_idx:{}",
+            self.output_index, self.output_count, self.head_index
+        );
+        */
         let count = self.output_count as usize;
         if self.output_index as usize > self.head_index {
             return HSDstate::IllegalBackref;
