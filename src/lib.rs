@@ -141,4 +141,12 @@ mod test {
         let out1 = encoder::encode(&src, &mut dst1, &cfg).unwrap();
         assert!(decoder::decode(out1, &mut dst2, &cfg).is_err());
     }
+
+    #[test]
+    fn short_output_buffer() {
+        let src = [6];
+        let mut out = [0];
+        let cfg: Config = Default::default();
+        assert!(encoder::encode(&src, &mut out, &cfg).is_err());
+    }
 }

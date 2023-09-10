@@ -102,7 +102,7 @@ impl<'a, 'b> HeatshrinkEncoder<'a, 'b> {
             }
         }
 
-        self.flush();
+        self.flush()?;
         Ok(&self.output[..self.bit_index])
     }
 
@@ -121,12 +121,16 @@ impl<'a, 'b> HeatshrinkEncoder<'a, 'b> {
         Ok(())
     }
 
-    fn flush(&mut self) {
+    fn flush(&mut self) -> Result<(), EncodeError> {
         // There are maximum 7 unwritten bits in the bitbuffer
         if self.num_bits > 0 {
+            if self.output.len() <= self.bit_index {
+                return Err(EncodeError::OutputFull);
+            }
             self.output[self.bit_index] = (self.bit_buf << (8 - self.num_bits)) as u8;
             self.bit_index += 1;
             self.num_bits = 0;
         }
+        Ok(())
     }
 }
