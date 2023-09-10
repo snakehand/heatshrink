@@ -10,6 +10,6 @@ fuzz_target!(|data: &[u8]| {
         out.resize_with(sz, || 0);
 
         let cfg: Config = Default::default();
-        let decoded = decode(&data[2..], &mut out, &cfg);
+        let _decoded = decode(&data[2..], &mut out, &cfg);
     }
 });

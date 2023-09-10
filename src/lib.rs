@@ -1,4 +1,4 @@
-#![no_std]
+// #![no_std]
 #![deny(warnings)]
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
@@ -148,5 +148,23 @@ mod test {
         let mut out = [0];
         let cfg: Config = Default::default();
         assert!(encoder::encode(&src, &mut out, &cfg).is_err());
+    }
+
+    #[test]
+    fn clib_compatibility() {
+        let src = hex_literal::hex!("90D4B2B549A408057C003E0100C9811B7CA05F1817C002DA5F04025F0005");
+        let expected = hex_literal::hex!("215295543402000000000000000000000000000000000000000000000000000000000000000000009302000000000000F202F102F0020000000000002F0400000000000000000000000000000000000000000000");
+        let cfg = Config::new(11, 4).unwrap();
+        let mut dst1 = [0; 100];
+        let decoded = decoder::decode(&src, &mut dst1, &cfg).unwrap();
+        assert_eq!(decoded, expected);
+    }
+
+    #[test]
+    fn random_fuzz_crash_1() {
+        let src = [14, 64, 14, 64];
+        let mut out = [0; 20];
+        let cfg: Config = Default::default();
+        let _ = decoder::decode(&src, &mut out, &cfg);
     }
 }

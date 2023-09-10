@@ -11,7 +11,6 @@ enum HSDstate {
     HSDSYieldBackref,    /* ready to yield back-reference */
     HSDSNeedMoreData,    /* End of input buffer detected */
     OutputFull,          /* Abort due to full output */
-    IllegalBackref,      /* Abort due to illegal backref */
 }
 
 /// Errors that can be encountered while decompressing data
@@ -19,8 +18,6 @@ enum HSDstate {
 pub enum DecodeError {
     /// The output buffer was not large enough to hold the decompressed data
     OutputFull,
-    /// The Backrefs points outside the start of data
-    IllegalBackref,
 }
 
 pub struct HeatshrinkDecoder<'a, 'b> {
@@ -83,9 +80,6 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
                 }
                 HSDstate::OutputFull => {
                     return Err(DecodeError::OutputFull);
-                }
-                HSDstate::IllegalBackref => {
-                    return Err(DecodeError::IllegalBackref);
                 }
             };
             // println!("State: {:?} {:?}", self.state, self.bit_index);
@@ -200,17 +194,23 @@ impl<'a, 'b> HeatshrinkDecoder<'a, 'b> {
             self.output_index, self.output_count, self.head_index
         );
         */
-        let count = self.output_count as usize;
-        if self.output_index as usize > self.head_index {
-            return HSDstate::IllegalBackref;
-        }
-        let start_in = self.head_index - self.output_index as usize;
+        let mut count = self.output_count as usize;
         if self.head_index + count > self.output.len() {
             return HSDstate::OutputFull;
         }
-        for i in 0..count {
-            self.output[self.head_index] = self.output[start_in + i];
+        while self.output_index as usize > self.head_index && count > 0 {
+            // C encoder refs an empty window filled with 0 bytes
+            // Allow for this in decoding to maintain compatibility
+            self.output[self.head_index] = 0;
             self.head_index += 1;
+            count -= 1;
+        }
+        if count > 0 {
+            let start_in = self.head_index - self.output_index as usize;
+            for i in 0..count {
+                self.output[self.head_index] = self.output[start_in + i];
+                self.head_index += 1;
+            }
         }
         HSDstate::HSDSTagBit
     }
